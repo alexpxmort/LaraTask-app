@@ -1,25 +1,42 @@
+import { useContext } from "react";
 import {
     BrowserRouter as Router,
     Routes,
-    Route,
-    
+    Route    
   } from "react-router-dom";
-import { AuthContextProvider } from "../contexts/auth.context";
+import NavBar from "../components/shared/navbar";
+import { AuthContext } from "../contexts/auth.context";
 import Home from "../pages/Home";
  import Login from "../pages/Login";
 import SignUp from "../pages/SignUp";
 
-  
-export default function RouterX() {
+
+const AppRoutes = () => {
     return (
-      <AuthContextProvider>
+        <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+        </Routes>
+    )
+}
+
+const AuthRoutes = () => {
+    return (
+        <Routes>
+            <Route path="/home" element={<Home />} /> 
+        </Routes>
+    )
+}
+
+export default function RouterX() {
+    const {signed} = useContext(AuthContext);
+
+    return (
+      <>
+        <NavBar/>
         <Router>
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/home" element={<Home />} />
-            </Routes>
+            {signed ? <AuthRoutes/> : <AppRoutes/>}
         </Router>
-      </AuthContextProvider>
+      </>
     );
   }
