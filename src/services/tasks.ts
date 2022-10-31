@@ -55,4 +55,14 @@ export const TaskService = {
          throw err ;
     }
  },
+
+ async complete(id:number):Promise<any>{
+   try{
+    const resp =   await api.patch(`/tasks/completeTask/${id}`,{},generateConfig(localStorage.getItem('token')))
+
+    return resp
+   }catch(err){
+        throw err ;
+   }
+},
 }

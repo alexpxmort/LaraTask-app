@@ -147,6 +147,8 @@ const TaskList = () => {
                       localStorage.setItem('tasks',JSON.stringify(newTasksCompleted))
                     }
 
+                    await TaskService.complete(id);
+
                     setTasks(newTasksCompleted)
                 }}
                 />)
