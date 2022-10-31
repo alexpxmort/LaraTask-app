@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
  const RowContainer = styled.div`
-display;flex;
+display:flex;
 flex-direction:row;
 `
  const ColumnContainer = styled.div`
@@ -9,7 +9,7 @@ display:flex;
 flex-direction:column;
 `
  const FlexContainer = styled.div`
-display;flex;
+display:flex;
 flex-direction:column;
 `
 
