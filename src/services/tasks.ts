@@ -1,4 +1,4 @@
-import { api, config } from "./api"
+import { api, generateConfig } from "./api"
 
 
 type TaskDto = {
@@ -12,7 +12,7 @@ export const TaskService = {
 
  async create(userDto:TaskDto):Promise<any>{
     try{
-     const resp =   await api.post('/tasks/create',userDto,config)
+     const resp =   await api.post('/tasks/create',userDto,generateConfig(localStorage.getItem('token')))
  
      return resp
     }catch(err){
@@ -21,7 +21,7 @@ export const TaskService = {
  },
  async all():Promise<any>{
     try{
-     const resp =   await api.get('/tasks',config)
+     const resp =   await api.get('/tasks',generateConfig(localStorage.getItem('token')))
  
      return resp
     }catch(err){
@@ -30,7 +30,7 @@ export const TaskService = {
  },
  async getById(id:number):Promise<any>{
     try{
-     const resp =   await api.get(`/tasks/${id}`,config)
+     const resp =   await api.get(`/tasks/${id}`,generateConfig(localStorage.getItem('token')))
  
      return resp
     }catch(err){
@@ -39,7 +39,7 @@ export const TaskService = {
  },
  async deleteById(id:number):Promise<any>{
     try{
-     const resp =   await api.delete(`/tasks/${id}`,config)
+     const resp =   await api.delete(`/tasks/${id}`,generateConfig(localStorage.getItem('token')))
  
      return resp
     }catch(err){
@@ -48,7 +48,7 @@ export const TaskService = {
  },
  async update(id:number,userDto:TaskDto):Promise<any>{
     try{
-     const resp =   await api.put(`/tasks/${id}`,userDto,config)
+     const resp =   await api.put(`/tasks/${id}`,userDto,generateConfig(localStorage.getItem('token')))
  
      return resp
     }catch(err){

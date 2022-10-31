@@ -33,6 +33,7 @@ export const AuthContextProvider = ({children})=>{
     function signOut (){
         localStorage.removeItem('token')
         localStorage.removeItem('user');
+        localStorage.removeItem('tasks');
         setUser(null);
     }
 

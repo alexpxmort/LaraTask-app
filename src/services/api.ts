@@ -1,8 +1,10 @@
 import axios from 'axios';
 
 
-export const config = {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token') || ''}` }
+export const generateConfig =  (token:string) => {
+    return {
+        headers: { Authorization: `Bearer ${token}` }
+    }
 };
 
 

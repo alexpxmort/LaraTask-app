@@ -1,6 +1,6 @@
 import {  useEffect, useState,Fragment } from "react";
 import { useNavigate } from "react-router-dom";
-import { ColumnContainer } from "../../components/Container";
+import { ColumnContainer, RowContainer } from "../../components/Container";
 import { TaskService } from "../../services/tasks";
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
@@ -13,6 +13,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import { Link } from "react-router-dom";
+import SearchX from "../../components/search";
+import { Checkbox, InputLabel } from "@mui/material";
 
 
 
@@ -22,8 +24,9 @@ interface Task{
     completed:boolean;
     description:string;
     OnDelete?:()=>void;
+    onComplete?:()=>void;
 }
-const CardTask = ({name,completed,description,id,OnDelete}:Task) => {
+const CardTask = ({name,completed,description,id,OnDelete,onComplete}:Task) => {
 
     const navigate = useNavigate();
 
@@ -40,7 +43,7 @@ const CardTask = ({name,completed,description,id,OnDelete}:Task) => {
         </CardContent>
         <CardActions>
           {
-            !completed &&   <Button type="button" style={{color:'white'}}>
+            !completed &&   <Button type="button" style={{color:'white'}} onClick={onComplete}>
             <CheckCircleIcon/>
         </Button>
           }
@@ -60,13 +63,19 @@ const CardTask = ({name,completed,description,id,OnDelete}:Task) => {
 const TaskList = () => {
     
     const [tasks,setTasks] = useState([]);
+    const [tasksCompleted,setTasksCompleted] = useState(false);
+    const [tasksNotCompleted,setTasksNotCompleted] = useState(false)
+
+    const fetchDataTaskList = async () => {
+        if(localStorage.getItem('token')){
+         const resultTasks = await TaskService.all();
+         localStorage.setItem('tasks',JSON.stringify(resultTasks.data))
+         setTasks(resultTasks.data);
+        }
+     }
+
 
     useEffect(()=>{
-        async function fetchDataTaskList(){
-            const resultTasks = await TaskService.all();
-            setTasks(resultTasks.data)
-        }
-
         fetchDataTaskList()
     },[]);
 
@@ -75,12 +84,72 @@ const TaskList = () => {
           <Link to='/create'>
             <AddIcon/>
            </Link>
+           <SearchX handleClick={async (inputRef)=>{
+                   const valFilter = inputRef.current.querySelector('input').value
+                  
+                   let filtredTasks = tasks.filter(({name,description}) => name.toLowerCase().includes(valFilter.toLowerCase())
+                   || description.toLowerCase().includes(valFilter.toLowerCase())
+                   )
+
+                   if(!valFilter){
+                    if(localStorage.getItem('tasks')){
+                        filtredTasks = JSON.parse(localStorage.getItem('tasks'))
+                    }
+                   }
+
+                   if(tasksCompleted  && !tasksNotCompleted){
+                    filtredTasks = filtredTasks.filter(({completed}) => completed)
+                   }
+
+                   if(tasksNotCompleted && !tasksCompleted){
+                    filtredTasks = filtredTasks.filter(({completed}) => !completed)
+                   }
+
+                   setTasks(filtredTasks)
+
+           }} />
+
+           <RowContainer style={{justifyContent:'center',alignItems:'center'}}>
+            <InputLabel htmlFor="Completed">Tasks Completed </InputLabel>
+                <Checkbox  checked={tasksCompleted}
+                        onChange={(evt) => setTasksCompleted(evt.target.checked)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        /> 
+
+            <InputLabel htmlFor="Completed">Tasks Not Completed </InputLabel>
+                <Checkbox  checked={tasksNotCompleted}
+                        onChange={(evt) => setTasksNotCompleted(evt.target.checked)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        /> 
+           </RowContainer>
+                   
             {
                 tasks.map(({name,completed,description,id}:Task) => <CardTask key={id} id={id}  name={name} description={description} completed={completed} OnDelete={async () => {
                     await TaskService.deleteById(id);
                     const newTasks = tasks.filter((task) => task.id !== id);
                     setTasks(newTasks);
-                }} />)
+                }}
+
+                onComplete={async () =>{
+                    let taskCompleted = {name,completed:true,description,id};
+
+                    const newTasksCompleted = [];
+
+                    tasks.forEach((task) => {
+                        if(task.id == id){
+                            task = taskCompleted;
+                        }
+
+                        newTasksCompleted.push(task);
+                    })
+
+                    if(localStorage.getItem('tasks')){
+                      localStorage.setItem('tasks',JSON.stringify(newTasksCompleted))
+                    }
+
+                    setTasks(newTasksCompleted)
+                }}
+                />)
             }
         </ColumnContainer>
     )
