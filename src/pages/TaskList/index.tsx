@@ -6,7 +6,6 @@ import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -14,7 +13,55 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import { Link } from "react-router-dom";
 import SearchX from "../../components/search";
-import { Checkbox, InputLabel } from "@mui/material";
+import { Checkbox, InputLabel,Dialog, DialogTitle,DialogContent,DialogActions,Button } from "@mui/material";
+
+type DialogDeleteTaskProps = {
+    data:any;
+}
+
+const  DialogConfirmation = ({data}:DialogDeleteTaskProps) => {
+    const [open, setOpen] = useState(true);
+    
+    const handleClose = () => {
+      setOpen(false);
+      data.closeFunc()
+    };
+    
+    return (
+      <div>      
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            <ColumnContainer style={{justifyContent:'space-between',alignItems:'flex-end'}}>
+              <h3>{data.actionName} </h3>
+            </ColumnContainer>
+          </DialogTitle>
+          <DialogContent> 
+                <h3>{data.name}</h3>
+          </DialogContent>
+          <DialogActions>
+            <RowContainer>
+              <Button onClick={()=>{
+                data.func();
+              }}>
+                Sim
+              </Button>
+              <Button onClick={()=>{
+                handleClose()
+              }}>
+                Não
+              </Button>
+            </RowContainer>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+    }
+    
 
 
 
@@ -26,6 +73,7 @@ interface Task{
     OnDelete?:()=>void;
     onComplete?:()=>void;
 }
+
 const CardTask = ({name,completed,description,id,OnDelete,onComplete}:Task) => {
 
     const navigate = useNavigate();
@@ -64,7 +112,11 @@ const TaskList = () => {
     
     const [tasks,setTasks] = useState([]);
     const [tasksCompleted,setTasksCompleted] = useState(false);
-    const [tasksNotCompleted,setTasksNotCompleted] = useState(false)
+    const [tasksNotCompleted,setTasksNotCompleted] = useState(false);
+
+    const [visible,setVisible] = useState(false)
+    const [dataConfirmation, setDataConfirmation] = useState(null);
+
 
     const fetchDataTaskList = async () => {
         if(localStorage.getItem('token')){
@@ -122,35 +174,70 @@ const TaskList = () => {
                         inputProps={{ 'aria-label': 'controlled' }}
                         /> 
            </RowContainer>
+
+           {
+                  visible &&  <DialogConfirmation data={dataConfirmation}/>
+            }
                    
             {
-                tasks.map(({name,completed,description,id}:Task) => <CardTask key={id} id={id}  name={name} description={description} completed={completed} OnDelete={async () => {
-                    await TaskService.deleteById(id);
-                    const newTasks = tasks.filter((task) => task.id !== id);
-                    setTasks(newTasks);
-                }}
+                tasks.map(({name,completed,description,id}:Task) => <CardTask key={id} id={id}  name={name} description={description} completed={completed} OnDelete={
+                    
+                   () => {
+                    setDataConfirmation({
+                        actionName:'Deseja realmente deletar esta task ?',
+                        name,
+                        func:async ()=>{
+                            await TaskService.deleteById(id);
+                            const newTasks = tasks.filter((task) => task.id !== id);
+                            setTasks(newTasks);
+                       },
+                         closeFunc:()=>{
+                           setVisible(false);
+                         }
+                    });
 
-                onComplete={async () =>{
-                    let taskCompleted = {name,completed:true,description,id};
+                    setVisible(true);
+                    
+                   }
+                    
+                }
 
-                    const newTasksCompleted = [];
+                onComplete={
+                    () => {
+                        setDataConfirmation({
+                            actionName:'Deseja realmente completar esta task ?',
+                            name,
+                            func:async ()=>{
+                                let taskCompleted = {name,completed:true,description,id};
 
-                    tasks.forEach((task) => {
-                        if(task.id == id){
-                            task = taskCompleted;
-                        }
-
-                        newTasksCompleted.push(task);
-                    })
-
-                    if(localStorage.getItem('tasks')){
-                      localStorage.setItem('tasks',JSON.stringify(newTasksCompleted))
+                                const newTasksCompleted = [];
+            
+                                tasks.forEach((task) => {
+                                    if(task.id == id){
+                                        task = taskCompleted;
+                                    }
+            
+                                    newTasksCompleted.push(task);
+                                })
+            
+                                if(localStorage.getItem('tasks')){
+                                  localStorage.setItem('tasks',JSON.stringify(newTasksCompleted))
+                                }
+            
+                                await TaskService.complete(id);
+            
+                                setTasks(newTasksCompleted)
+                           },
+                             closeFunc:()=>{
+                               setVisible(false);
+                             }
+                        });
+    
+                        setVisible(true);
+                        
                     }
-
-                    await TaskService.complete(id);
-
-                    setTasks(newTasksCompleted)
-                }}
+                }
+                    
                 />)
             }
         </ColumnContainer>
