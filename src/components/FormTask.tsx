@@ -100,13 +100,16 @@ const FormTask = ({onSubmit,isEdit,fillFields} :FormInterface) => {
             <Input className='input' id="description" name='description' aria-describedby="description" type='text' required  inputRef={descriptionInputRef}/>
         </FormControl>
 
-        <RowContainer style={{alignItems:'center',justifyContent:'center'}}>
-            <InputLabel htmlFor="Completed">Completed </InputLabel>
-            <Checkbox  checked={completed}
-            onChange={(evt) => setCompleted(evt.target.checked)}
-            inputProps={{ 'aria-label': 'controlled' }}
-            /> 
-        </RowContainer>
+        {
+            isEdit && 
+            <RowContainer style={{alignItems:'center',justifyContent:'center'}}>
+                <InputLabel htmlFor="Completed">Completed </InputLabel>
+                <Checkbox  checked={completed}
+                onChange={(evt) => setCompleted(evt.target.checked)}
+                inputProps={{ 'aria-label': 'controlled' }}
+                /> 
+            </RowContainer>
+        }
 
 
 

@@ -6,9 +6,11 @@ import {
   } from "react-router-dom";
 import NavBar from "../components/shared/navbar";
 import { AuthContext } from "../contexts/auth.context";
+import CreateTask from "../pages/CreateTask";
 import Home from "../pages/Home";
  import Login from "../pages/Login";
 import SignUp from "../pages/SignUp";
+import UpdateTask from "../pages/UpdateTask";
 
 
 const AppRoutes = () => {
@@ -16,8 +18,6 @@ const AppRoutes = () => {
         <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/home" element={<Home />} /> 
-
         </Routes>
     )
 }
@@ -26,6 +26,8 @@ const AuthRoutes = () => {
     return (
         <Routes>
             <Route path="/home" element={<Home />} /> 
+            <Route path="/create" element={<CreateTask />} /> 
+            <Route path="/tasks/:id" element={<UpdateTask />} /> 
         </Routes>
     )
 }

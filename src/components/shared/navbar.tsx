@@ -81,7 +81,7 @@ let settings = [{
            
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: `${pages.length > 0 ?'flex' :'none'}`, md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -110,7 +110,7 @@ let settings = [{
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {settings.map((page,idx) => (
+              {pages.map((page,idx) => (
                 <MenuItem key={idx} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center" onClick={page.handleClick}>{page.name}</Typography>
                 </MenuItem>
@@ -151,7 +151,7 @@ let settings = [{
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <AccountCircle />
+                <AccountCircle />
               </IconButton>
             </Tooltip>
             <Menu
