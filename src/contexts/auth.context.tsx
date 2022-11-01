@@ -30,7 +30,8 @@ export const AuthContextProvider = ({children})=>{
 
 
 
-    function signOut (){
+    async function signOut (){
+        await LoginService.logOut();
         localStorage.removeItem('token')
         localStorage.removeItem('user');
         localStorage.removeItem('tasks');

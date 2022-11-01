@@ -24,7 +24,7 @@ const NavBar = () => {
 
 
   const _signOut = async ()=>{
-     signOut();   
+     await signOut();   
      window.location.href = '/login'; 
   }
 

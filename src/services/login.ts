@@ -1,4 +1,4 @@
-import { api } from "./api"
+import { api, generateConfig } from "./api"
 
 type DataAuth = {
    token:string
@@ -19,6 +19,13 @@ export const LoginService = {
      })
  
      return resp
+    }catch(err){
+         throw err ;
+    }
+ },
+ async logOut():Promise<any>{
+    try{
+       await api.post('/auth/logOut',{},generateConfig(localStorage.getItem('token')))
     }catch(err){
          throw err ;
     }
