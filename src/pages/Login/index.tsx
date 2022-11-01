@@ -55,7 +55,6 @@ const Login = () => {
             navigate('/home')
             
         }catch(err){
-            console.log(err);
             setShowErrors(true)
             setTitle(err.response ? err.response.data.msg: err.message)
         }

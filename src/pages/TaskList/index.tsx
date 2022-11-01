@@ -16,6 +16,7 @@ import SearchX from "../../components/search";
 import { Checkbox, InputLabel,Dialog, DialogTitle,DialogContent,DialogActions,Button } from "@mui/material";
 import Loader from "../../components/Loader";
 import theme from "../../theme/theme";
+import {storage} from "../../helpers/storage";
 
 type DialogDeleteTaskProps = {
     data:any;
@@ -115,17 +116,18 @@ const TaskList = () => {
     const [tasks,setTasks] = useState([]);
     const [tasksCompleted,setTasksCompleted] = useState(false);
     const [tasksNotCompleted,setTasksNotCompleted] = useState(false);
-    const [loading,setLoading] = useState(false);
+    const [loading,setLoading] = useState(true);
 
     const [visible,setVisible] = useState(false)
     const [dataConfirmation, setDataConfirmation] = useState(null);
 
 
     const fetchDataTaskList = async () => {
-        if(localStorage.getItem('token')){
+        if(storage.isExistsToken()){
          const resultTasks = await TaskService.all();
          localStorage.setItem('tasks',JSON.stringify(resultTasks.data))
          setTasks(resultTasks.data);
+         setLoading(false);
         }
      }
 
