@@ -14,6 +14,8 @@ import AddIcon from '@mui/icons-material/Add';
 import { Link } from "react-router-dom";
 import SearchX from "../../components/search";
 import { Checkbox, InputLabel,Dialog, DialogTitle,DialogContent,DialogActions,Button } from "@mui/material";
+import Loader from "../../components/Loader";
+import theme from "../../theme/theme";
 
 type DialogDeleteTaskProps = {
     data:any;
@@ -79,7 +81,7 @@ const CardTask = ({name,completed,description,id,OnDelete,onComplete}:Task) => {
     const navigate = useNavigate();
 
     return   <Box sx={{ minWidth: 275 }} >
-    <Card variant="outlined" style={{backgroundColor:`${completed ? '#00ff00' :'#ff0000'}`,cursor:'pointer'}}>
+    <Card variant="outlined" style={{backgroundColor:`${completed ? theme.colors.green :theme.colors.red}`,cursor:'pointer'}}>
         <Fragment>
         <CardContent>
         <Typography  variant="h3">
@@ -113,6 +115,7 @@ const TaskList = () => {
     const [tasks,setTasks] = useState([]);
     const [tasksCompleted,setTasksCompleted] = useState(false);
     const [tasksNotCompleted,setTasksNotCompleted] = useState(false);
+    const [loading,setLoading] = useState(false);
 
     const [visible,setVisible] = useState(false)
     const [dataConfirmation, setDataConfirmation] = useState(null);
@@ -130,6 +133,10 @@ const TaskList = () => {
     useEffect(()=>{
         fetchDataTaskList()
     },[]);
+    
+    if(loading){
+      return <Loader/>
+    }
 
     return (
         <ColumnContainer>  

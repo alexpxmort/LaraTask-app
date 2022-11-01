@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import theme from "../theme/theme";
 
  const RowContainer = styled.div`
 display:flex;
@@ -17,11 +18,13 @@ flex-direction:column;
 display:flex;
 flex-direction:column;
 padding:15vw;
-background-color:#ddd;
+background-color:${theme.colors.gray};
 justify-content:space-around;
 
 
 
 `
+
+
 
 export {ColumnContainer,FlexContainer,RowContainer,FormLoginContainer};
